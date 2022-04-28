@@ -19,8 +19,8 @@ objfile=${testprog::3}".o"
 exefile=${testprog::3}".exe"
 echo $objfile
 echo $exefile
-
-
+echo $bindir
+echo $incldir
 
 $bindir/h5pcc -c -g -O3 -I$incldir $testprog -o $objfile
 
