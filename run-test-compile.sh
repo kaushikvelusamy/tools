@@ -1,4 +1,4 @@
-# Bash script to run simple hdf5 test program
+#  script to run simple hdf5 test program
 # Author: Kaushik 
 # Date: Apr 27, 2022
  
@@ -6,7 +6,7 @@
 
 #!/bin/bash
 set -e
-#set -x
+#set -x 
 
 
 export HDF5_ROOT=$(pwd)
@@ -26,5 +26,4 @@ $bindir/h5pcc -c -g -O3 -I$incldir $testprog -o $objfile
 
 $bindir/h5pcc $objfile -o $exefile -L$libdir -lhdf5 -lz 
 
-rm $objfile dset.h5 
-
+rm ${testprog::3}".o"
