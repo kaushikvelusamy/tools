@@ -6,7 +6,7 @@
 
 #!/bin/bash
 set -e
-#set -x 
+set -x 
 
 
 export HDF5_ROOT=$(pwd)

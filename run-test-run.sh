@@ -2,7 +2,7 @@
 
 #!/bin/sh
 set -e
-#set -x
+set -x
 
 
 #cb_nodes   = (lfs_count * cb_mult) / cb_div
@@ -68,7 +68,7 @@ printenv | grep "HDF5*"
 
 if [ "$2" == "mac" ]; then
     echo "$3 ranks" 
-    #mpirun -n $3 ./tes.exe 
+    mpirun -n $3 ./tes.exe 
 
 elif [ "$2" == "theta" ]; then
     # Set lustre stripe properties

@@ -12,7 +12,7 @@
 
 #!/bin/sh
 set -e
-#set -x
+set -x
 
 stage1()
 {
