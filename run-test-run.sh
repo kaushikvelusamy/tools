@@ -4,12 +4,19 @@
 set -e
 set -x
 
-# Example sh ./run-test-run.sh modeNumber BuildMachine Ranks Executable
-# Example sh ./run-test-run.sh 1 mac 2 ./tes.exe
+# Example sh ./run-test-run.sh modeNumber BuildMachine Ranks Executable debug
+# Example sh ./run-test-run.sh 1 mac 2 ./tes.exe debug
+# Example sh ./run-test-run.sh 1 mac 2 ./tes.exe 
 
+# $1 is modeNumber
 # $1 = 1 "Mode set to Default-Collective ( No CCIO)"
 # $1 = 2 "Mode set to Default for CCIO"
 # $1 = 3 "Mode set to Topology Aware CCIO"
+
+# $2 is BuildMachine
+# $3 is Ranks
+# $4 is Executable
+# $5 is Debug
 
 #cb_nodes   = (lfs_count * cb_mult) / cb_div
 #cb_stride  = (nranks) / cb_nodes
@@ -74,6 +81,12 @@ elif [ "$1" == "3" ]; then
 fi
 
 printenv | grep "HDF5*"
+
+if [ "$5" == "debug" ]; then
+    export H5FD_mpio_Debug="yes"
+    export HDF5_CCIO_DEBUG="yes"
+fi
+
 
 if [ "$2" == "mac" ]; then
     echo "Build Machine = $2"
