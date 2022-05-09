@@ -5,8 +5,8 @@ set -e
 set -x
 
 # Example sh ./run-test-run.sh modeNumber BuildMachine Ranks Executable debug
-# Example sh ./run-test-run.sh 1 mac 2 ./tes.exe debug
-# Example sh ./run-test-run.sh 1 mac 2 ./tes.exe 
+# Example sh ./run-test-run.sh 1 mac 2 ./testprogram.exe debug
+# Example sh ./run-test-run.sh 1 mac 2 ./testprogram.exe
 
 # $1 is modeNumber
 # $1 = 1 "Mode set to Default-Collective ( No CCIO)"

@@ -3,7 +3,7 @@
 # Date: Apr 27, 2022
 # Example : sh ./run-ccio.sh -s "1 2 3" -b ccio -m mac -d prod -p 0
 # Example : sh ./run-ccio.sh -s 1 -b ccio 
-# Example : sh ./run-ccio.sh -s "2 3" -m mac -d prod -p 0
+# Example : sh ./run-ccio.sh -s "2 3" -m mac -d prod -p 0 
 # Example : sh ./run-ccio.sh -s 3 -m mac
 # Stage 1: Setup code : args -b 
 # Stage 2: Compile : args -m -d -p
@@ -81,7 +81,13 @@ stage3()
   HDF5_INSTALL_DIR=${HDF5_ROOT}/library/install/ccio
   cd $HDF5_ROOT/gitrepos
   git clone https://xgitlab.cels.anl.gov/kvelusamy/BuildAndTest.git 
-  mkdir -p $HDF5_ROOT/exerciser/ccio
+
+  if [[ ! -e $HDF5_ROOT/exerciser/ccio ]]; then
+    mkdir -p $HDF5_ROOT/exerciser/ccio
+  elif [[ ! -d $HDF5_ROOT/exerciser/ccio ]]; then
+    echo "$HDF5_ROOT/exerciser/ccio already exists" 1>&2
+  fi
+
   cd $HDF5_ROOT/exerciser/ccio
   cp $HDF5_ROOT/gitrepos/BuildAndTest/Exerciser/exerciser.c .
 
@@ -95,7 +101,12 @@ stage3()
     make -f Makefile.mac 
   fi
 
-  mkdir -p $HDF5_ROOT/exerciser/run
+  if [[ ! -e $HDF5_ROOT/exerciser/run ]]; then
+    mkdir -p $HDF5_ROOT/exerciser/run
+  elif [[ ! -d $HDF5_ROOT/exerciser/run ]]; then
+    echo "$HDF5_ROOT/exerciser/run already exists" 1>&2
+  fi
+
   cd $HDF5_ROOT/exerciser/run
   ln -s  ../ccio/hdf5Exerciser hdf5Exerciser-ccio
   cp $HDF5_ROOT/gitrepos/BuildAndTest/Exerciser/Common/run-example.py . 
