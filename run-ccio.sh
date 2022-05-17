@@ -4,7 +4,7 @@
 # Example : sh ./run-ccio.sh -s "1 2 3" -b ccio-v2 -m mac -d prod -p 0
 # Example : sh ./run-ccio.sh -s 1 -b ccio 
 # Example : sh ./run-ccio.sh -s "2 3" -m mac -d prod -p 0 
-# Example : sh ./run-ccio.sh -s "2 3" -m mac -d debug -p 0 
+# Example : sh ./run-ccio.sh -s 4
 # Example : sh ./run-ccio.sh -s 3 -m mac
 # Stage 1: Setup code : args -b 
 # Stage 2: Compile : args -m -d -p
@@ -17,6 +17,7 @@ set -x
 
 stage1()
 {
+  echo "Setting up HDF5 code and branch"
   mkdir -p $HDF5_ROOT/gitrepos
   mkdir -p $HDF5_ROOT/library/build/ccio
   mkdir -p $HDF5_ROOT/library/install/ccio
@@ -24,10 +25,13 @@ stage1()
   git clone https://github.com/kaushikvelusamy/hdf5.git
   cd $HDF5_ROOT/gitrepos/hdf5
   git checkout $branch
+  echo "Setting up HDF5 code and branch - Done"
+
 }
 
 stage2()
 {
+  echo "Starting scripts for HDF5 Compile, Make and install"
   if [ "$machine" == "theta" ]; then
       module unload darshan
       module load craype-haswell
@@ -43,7 +47,7 @@ stage2()
       if [ "$debug" == "prod" ]; then
           CC=cc CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       elif [ "$debug" == "debug" ]; then
-          CC=cc CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=cc CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       else
           echo "debug incorrect"
           exit 0
@@ -56,7 +60,7 @@ stage2()
       if [ "$debug" == "prod" ]; then
           CC=mpicc CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       elif [ "$debug" == "debug" ]; then
-          CC=mpicc CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=mpicc CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       else
           echo "debug incorrect"
           exit 0
@@ -74,11 +78,13 @@ stage2()
     echo "makeparallel incorrect"
     exit 0
   fi
+  echo "Starting scripts for HDF5 Compile, Make and install - Done"
 }
 
 
 stage3()
 {
+  echo "Starting scripts for Exerciser test code setup"
   HDF5_INSTALL_DIR=${HDF5_ROOT}/library/install/ccio
   cd $HDF5_ROOT/gitrepos
   git clone https://xgitlab.cels.anl.gov/kvelusamy/BuildAndTest.git 
@@ -112,6 +118,15 @@ stage3()
   ln -s  ../ccio/hdf5Exerciser hdf5Exerciser-ccio
   cp $HDF5_ROOT/gitrepos/BuildAndTest/Exerciser/Common/run-example.py . 
   #qsub -A datascience -t 30 -n 32 python3 run-example.py --machine theta --exec ./hdf5Exerciser-ccio --ppn 16 --ccio
+  echo "Exerciser test code setup - Done"
+}
+
+stage4()
+{
+  echo "just make install - helpful during debuging"
+  cd $HDF5_ROOT/library/build/ccio
+  make install
+  echo "just make install - helpful during debuging - Done"
 }
 
 usage() 
@@ -126,7 +141,8 @@ echo "Usage: $0 [-s stages <1|2|3|2 3|..>]
 
 echo "Stage 1: Setup code \t :args -b 
 Stage 2: Compile\t :args -m -d -p
-Stage 3: setup test code :args -m" 1>&2; exit 1; 
+Stage 3: Setup test code :args -m
+Stage 4: just make install - helpful during debuging" 1>&2; exit 1; 
 }
                           
 

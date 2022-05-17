@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#Example sh ./run-test-compile.sh testprogram.c
+# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2
 # Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2
 # Example : sh ./test-compile-run.sh -s 1 -b ccio 
 # Example : sh ./test-compile-run.sh -s "2 3" -m mac -d prod -p 0 
