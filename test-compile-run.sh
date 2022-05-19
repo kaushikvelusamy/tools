@@ -92,6 +92,8 @@ stage_run()
   if [ "$debug" == "debug" ]; then
       export H5FD_mpio_Debug="yes"
       export HDF5_CCIO_DEBUG="yes"
+      printenv | grep "H5FD_mpio_Debug"
+      printenv | grep "HDF5_CCIO_DEBUG"
   fi
 
 
@@ -115,7 +117,8 @@ stage_run()
       echo $mode
       echo "Num Ranks = $ranks " 
       echo "$ranks ranks" 
-      #aprun -n $ranks -N 8 $prog $debug 
+      #aprun -n $ranks -N 2 ./$exefile 
+      #aprun -n $ranks -N 2 gdb ./$exefile 
   fi
 }
 
