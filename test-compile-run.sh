@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2
-# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2
+# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
+# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
 # Example : sh ./test-compile-run.sh -s 1 -b ccio 
-# Example : sh ./test-compile-run.sh -s "2 3" -m mac -d prod -p 0 
+# Example : sh ./test-compile-run.sh -s "2 3" -m mac -d prod -p 0 -l no
 # Example : sh ./test-compile-run.sh -s 3 -m mac
 
 
@@ -137,7 +137,7 @@ echo "Usage: $0 [-s stages <compile|run|compile run..>]
 echo " Test" 1>&2; exit 1; 
 }
       
-while getopts s:p:m:d:o:r:c:h flag
+while getopts s:p:m:d:o:r:c:l:h flag
 do
     case "${flag}" in
         s) 
@@ -169,6 +169,19 @@ do
             exit 1
           fi
           ;;
+        l)
+        selection_io=${OPTARG} 
+        if [ $selection_io == "yes" ]; then
+          echo "selection_io = $selection_io";
+          export HDF5_USE_SELECTION_IO="yes"
+        elif [ $selection_io == "no" ]; then
+          echo "selection_io = $selection_io";
+          export HDF5_USE_SELECTION_IO="no"
+        else
+          usage
+          exit 1
+        fi
+        ;;
         o)
           run_mode=${OPTARG} 
           echo "Run Mode = $run_mode"
