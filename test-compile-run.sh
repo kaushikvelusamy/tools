@@ -2,13 +2,11 @@
 
 # Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
 # Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
-# Example : sh ./test-compile-run.sh -s 1 -b ccio 
 # Example : sh ./test-compile-run.sh -s "2 3" -m mac -d prod -p 0 -l no
-# Example : sh ./test-compile-run.sh -s 3 -m mac
 
 
 set -e
-#set -x 
+set -x 
 
 objfile="testprogram.o"
 exefile="testprogram.exe"
