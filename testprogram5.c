@@ -12,7 +12,7 @@ int main( int argc, char* argv[] )
     hid_t       file_id, dataset_id, datatype, memspace, filespace, fapl_id, xferPropList;         /* file and dataset handles */
     hsize_t     offset, dimsf = NX;      
     herr_t      status;
-    int         in_data[NX], out_data[NX];              
+    int         in_data[NX], out_data[NX]={0};              
     int         i, j;
 
     MPI_Init(&argc,&argv);
