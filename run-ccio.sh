@@ -45,9 +45,9 @@ stage2()
       cd $HDF5_ROOT/library/build/ccio
 
       if [ "$debug" == "prod" ]; then
-          CC=cc CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=cc CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
       elif [ "$debug" == "debug" ]; then
-          CC=cc CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=cc CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
       else
           echo "debug incorrect"
           exit 0
@@ -58,9 +58,9 @@ stage2()
       cd $HDF5_ROOT/library/build/ccio
 
       if [ "$debug" == "prod" ]; then
-          CC=mpicc CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=mpicc CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
       elif [ "$debug" == "debug" ]; then
-          CC=mpicc CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=mpicc CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
       else
           echo "debug incorrect"
           exit 0
