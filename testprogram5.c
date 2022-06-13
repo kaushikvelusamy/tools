@@ -23,7 +23,7 @@ int main( int argc, char* argv[] )
     printf ("\nWriting from rank %d \n", rank);
     for(i = 0; i < NX; i++)
     {
-        in_data[i] = rank;
+        in_data[i] = 100+rank;
         printf (" %d \t", in_data[i]);
     }
     printf ("\n");
