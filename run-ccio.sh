@@ -1,11 +1,11 @@
 # Bash script to clone,compile and run ccio feature of HDF5
 # Author: Kaushik 
 # Date: Apr 27, 2022
-# Example : sh ./run-ccio.sh -s "1 2 3" -b ccio-v2 -m mac -d prod -p 0
-# Example : sh ./run-ccio.sh -s 1 -b ccio 
-# Example : sh ./run-ccio.sh -s "2 3" -m mac -d prod -p 0 
+# Example : sh ./run-ccio.sh -s "1 2" -b ccio-v2 -m mac -d debug -p 0
+# Example : sh ./run-ccio.sh -s "2" -m mac -d debug -p 0 
+# Example : sh ./run-ccio.sh -s "2" -m theta -d debug -p 0 
 # Example : sh ./run-ccio.sh -s 4
-# Example : sh ./run-ccio.sh -s 3 -m mac
+
 # Stage 1: Setup code : args -b 
 # Stage 2: Compile : args -m -d -p
 # Stage 3: setup test code : args -m"

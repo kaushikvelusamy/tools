@@ -2,8 +2,7 @@
 
 # Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
 # Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
-# Example : sh ./test-compile-run.sh -s "2 3" -m mac -d prod -p 0 -l no
-
+# Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
 
 set -e
 set -x 
