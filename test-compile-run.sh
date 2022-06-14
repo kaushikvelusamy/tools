@@ -114,8 +114,10 @@ stage_run()
       echo $mode
       echo "Num Ranks = $ranks " 
       echo "$ranks ranks" 
-      #aprun -n $ranks -N 2 ./$exefile 
       #aprun -n $ranks -N 2 gdb ./$exefile 
+      aprun -n $ranks -N 1 ./$exefile 
+      #mpirun -np $ranks ./$exefile 
+
   fi
 }
 

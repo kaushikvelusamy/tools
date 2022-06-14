@@ -3,9 +3,9 @@
 # Date: Apr 27, 2022
 # Example : sh ./run-ccio.sh -s "1 2" -b ccio-v2 -m mac -d debug -p 0
 # Example : sh ./run-ccio.sh -s "2" -m mac -d debug -p 0 
-# Example : sh ./run-ccio.sh -s "2" -m theta -d debug -p 0 
-# Example : sh ./run-ccio.sh -s 4
-
+# Example : sh ./run-ccio.sh -s "2" -m theta -d debug -p 1 
+# Example : sh ./run-ccio.sh -s 4   //To run quick recompiling
+# Example : sh ./run-ccio.sh -c 1   //To make clean
 # Stage 1: Setup code : args -b 
 # Stage 2: Compile : args -m -d -p
 # Stage 3: setup test code : args -m"
@@ -37,6 +37,11 @@ stage2()
       module load craype-haswell
       module load craype-mic-knl
       module swap craype-mic-knl craype-haswell
+      #module unload craype-mic-knl
+      #module load PrgEnv-gnu
+      #module unload nompirun
+      #module swap PrgEnv-intel PrgEnv-gnu
+
       export LDFLAGS="-llustreapi"
       export CRAYPE_LINK_TYPE=dynamic
 
@@ -193,9 +198,9 @@ do
           cleaneverything=${OPTARG} 
           if [ $cleaneverything == 1 ]; then
             echo "cleaneverything: $cleaneverything";
-            rm -rf $(pwd)/gitrepos/
-            rm -rf $(pwd)/exerciser/
-            rm -rf $(pwd)/library/
+            cd $HDF5_ROOT/library/build/ccio
+            make clean
+            echo " make clean - Done"
             exit 1
           fi
           ;;
