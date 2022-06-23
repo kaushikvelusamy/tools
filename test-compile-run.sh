@@ -10,7 +10,6 @@ set -x
 
 export HDF5_ROOT=$(pwd)"/.."
 echo $HDF5_ROOT
-export LDFLAGS="-llustreapi"
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
 #use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
@@ -110,7 +109,7 @@ stage_run()
   elif [ "$machine" == "theta" ]; then
       # Set lustre stripe properties
       #subprocess.run(["lfs","setstripe","-c",str(lfs_count),"-S",str(lfs_size)+"m","."])
-
+      export LDFLAGS="-llustreapi"
       echo "Setting extra MPICH environment variables"
       export MPICH_MPIIO_HINTS='*:cray_cb_write_lock_mode=1'
       export MPICH_NEMESIS_ASYNC_PROGRESS= 'ML'

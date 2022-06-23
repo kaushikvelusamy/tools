@@ -17,11 +17,10 @@ set -x
 
 export HDF5_ROOT=$(pwd)"/.."
 echo $HDF5_ROOT
-export LDFLAGS="-llustreapi"
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
-#use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
-mycompiler="cc"
+#use mpicc(nompirun-debug/mac) or cc (prod-pmi.h) or h5pcc 
+mycompiler="mpicc"
 #extra arguments for hdf5 compile " --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api"
 
 stage1()
@@ -50,7 +49,7 @@ stage2()
       #module load PrgEnv-gnu
       #module unload nompirun
       #module swap PrgEnv-intel PrgEnv-gnu
-
+      export LDFLAGS="-llustreapi"
       cd $HDF5_ROOT/gitrepos/hdf5
       ./autogen.sh
       cd $HDF5_ROOT/library/build/ccio
