@@ -7,12 +7,19 @@
 set -e
 set -x 
 
-objfile="testprogram.o"
-exefile="testprogram.exe"
+
+export HDF5_ROOT=$(pwd)"/.."
+echo $HDF5_ROOT
+export LDFLAGS="-llustreapi"
+export CRAYPE_LINK_TYPE=dynamic
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
+#use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
+mycompiler="cc"
+
 
 stage_compile()
 {
-  export HDF5_ROOT=$(pwd)"/.."
+
   bindir=$HDF5_ROOT/library/install/ccio/bin
   incldir=$HDF5_ROOT/library/install/ccio/include
   libdir=$HDF5_ROOT/library/install/ccio/lib
@@ -21,8 +28,8 @@ stage_compile()
   echo $exefile
   echo $bindir
   echo $incldir
-  $bindir/h5pcc -c -g -O3 -I$incldir $testprog -o $objfile
-  $bindir/h5pcc $objfile -o $exefile -L$libdir -lhdf5 -lz 
+  $mycompiler -c -g -O3 -I$incldir $testprog -o $objfile
+  $mycompiler $objfile -o $exefile -L$libdir -lhdf5 -lz 
   rm $objfile
   echo "Executable File Name is $exefile" 
 }
@@ -52,7 +59,7 @@ stage_run()
   elif [ "$run_mode" == "2" ]; then
       mode="Mode set to CCIO=Default"
       export HDF5_CCIO_FD_AGG="yes" # [RECOMMENDED FOR GPFS]
-      export HDF5_CCIO_TOPO_PPN="ranks" # ranks > 0 
+      export HDF5_CCIO_TOPO_PPN="ranks" # ranks > 0 291*7
       export HDF5_CCIO_CB_SIZE="8388608"
       export HDF5_CCIO_FS_BLOCK_SIZE="8388608"
       export HDF5_CCIO_FS_BLOCK_COUNT="8"
@@ -114,10 +121,14 @@ stage_run()
       echo $mode
       echo "Num Ranks = $ranks " 
       echo "$ranks ranks" 
-      #aprun -n $ranks -N 2 gdb ./$exefile 
-      aprun -n $ranks -N 1 ./$exefile 
-      #mpirun -np $ranks ./$exefile 
 
+      if [ "$mycompiler" == "mpicc" ]; then
+        #mpirun -np $ranks gdb ./$exefile 
+        mpirun -np $ranks ./$exefile 
+      else
+        #aprun -n $ranks -N 2 gdb ./$exefile 
+        aprun -n $ranks -N 1 ./$exefile 
+      fi
   fi
 }
 

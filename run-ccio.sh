@@ -15,6 +15,15 @@
 set -e
 set -x
 
+export HDF5_ROOT=$(pwd)"/.."
+echo $HDF5_ROOT
+export LDFLAGS="-llustreapi"
+export CRAYPE_LINK_TYPE=dynamic
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
+#use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
+mycompiler="cc"
+#extra arguments for hdf5 compile " --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api"
+
 stage1()
 {
   echo "Setting up HDF5 code and branch"
@@ -42,17 +51,14 @@ stage2()
       #module unload nompirun
       #module swap PrgEnv-intel PrgEnv-gnu
 
-      export LDFLAGS="-llustreapi"
-      export CRAYPE_LINK_TYPE=dynamic
-
       cd $HDF5_ROOT/gitrepos/hdf5
       ./autogen.sh
       cd $HDF5_ROOT/library/build/ccio
 
       if [ "$debug" == "prod" ]; then
-          CC=cc CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
+          CC=$mycompiler CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       elif [ "$debug" == "debug" ]; then
-          CC=cc CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
+          CC=$mycompiler CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       else
           echo "debug incorrect"
           exit 0
@@ -63,9 +69,9 @@ stage2()
       cd $HDF5_ROOT/library/build/ccio
 
       if [ "$debug" == "prod" ]; then
-          CC=mpicc CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
+          CC=$mycompiler CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
       elif [ "$debug" == "debug" ]; then
-          CC=mpicc CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api
+          CC=$mycompiler CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
       else
           echo "debug incorrect"
           exit 0
@@ -211,9 +217,6 @@ do
     esac
 done
 
-
-export HDF5_ROOT=$(pwd)"/.."
-echo $HDF5_ROOT
 for stage in $stages;do
       echo stage$stage
       stage$stage
