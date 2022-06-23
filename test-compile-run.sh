@@ -7,13 +7,14 @@
 set -e
 set -x 
 
-
+objfile="testprogram.o"
+exefile="testprogram.exe"
 export HDF5_ROOT=$(pwd)"/.."
 echo $HDF5_ROOT
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
 #use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
-mycompiler="cc"
+mycompiler="mpicc"
 
 
 stage_compile()
