@@ -1,0 +1,8 @@
+This repository has the personal scripts and test programs for compiling and running parallel HDF5 for CCIO development. 
+
+Reminders 
+
+If linux in autogen.sh replace "HDF5_LIBTOOL=$(which libtool)" with "HDF5_LIBTOOL=$(which libtoolize)"
+
+
+

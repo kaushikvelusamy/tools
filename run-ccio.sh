@@ -9,7 +9,7 @@
 # Stage 1: Setup code : args -b 
 # Stage 2: Compile : args -m -d -p
 # Stage 3: setup test code : args -m"
-
+# If linux, in autogen.sh replace "HDF5_LIBTOOL=$(which libtool)" with "HDF5_LIBTOOL=$(which libtoolize)"
 
 #!/bin/sh
 set -e
@@ -40,7 +40,7 @@ stage1()
 stage2()
 {
   echo "Starting scripts for HDF5 Compile, Make and install"
-  if [ "$machine" == "theta" ]; then
+  if [ "$machine" = "theta" ]; then
       module unload darshan
       module load craype-haswell
       module load craype-mic-knl
@@ -54,22 +54,22 @@ stage2()
       ./autogen.sh
       cd $HDF5_ROOT/library/build/ccio
 
-      if [ "$debug" == "prod" ]; then
+      if [ "$debug" = "prod" ]; then
           CC=$mycompiler CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
-      elif [ "$debug" == "debug" ]; then
+      elif [ "$debug" = "debug" ]; then
           CC=$mycompiler CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       else
           echo "debug incorrect"
           exit 0
       fi
-  elif [ "$machine" == "mac" ]; then
+  elif [ "$machine" = "mac" ]; then
       cd $HDF5_ROOT/gitrepos/hdf5
       ./autogen.sh
       cd $HDF5_ROOT/library/build/ccio
 
-      if [ "$debug" == "prod" ]; then
+      if [ "$debug" = "prod" ]; then
           CC=$mycompiler CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
-      elif [ "$debug" == "debug" ]; then
+      elif [ "$debug" = "debug" ]; then
           CC=$mycompiler CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
       else
           echo "debug incorrect"
@@ -80,9 +80,9 @@ stage2()
       exit 0
   fi
   cd $HDF5_ROOT/library/build/ccio
-  if [ "$makeparallel" == 0 ]; then
+  if [ "$makeparallel" = 0 ]; then
     make install
-  elif [ "$makeparallel" == 1 ]; then
+  elif [ "$makeparallel" = 1 ]; then
     make -j 16 install
   else
     echo "makeparallel incorrect"
@@ -164,7 +164,8 @@ do
           ;;
         b) 
           branch=${OPTARG}
-          if [ $branch == "develop" -o $branch == "ccio" -o $branch == "ccio-v2" ]; then
+          if [ $branch = "develop" -o $branch = "ccio" -o $branch = "ccio-v2" ] 
+          then
             echo "branch: $branch";
           else
             usage
@@ -173,7 +174,9 @@ do
           ;;
         m)
           machine=${OPTARG} 
-          if [ $machine == "mac" -o $machine == "theta" ]; then
+          echo $machine
+          if [ $machine = "mac" -o $machine = "theta" ]
+          then
             echo "machine: $machine";
           else
             usage
@@ -182,7 +185,8 @@ do
           ;;
         d)
           debug=${OPTARG} 
-          if [ $debug == "prod" -o $debug == "debug" ]; then
+          if [ $debug = "prod" -o $debug = "debug" ] 
+          then
             echo "debug: $debug";
           else
             usage
@@ -191,7 +195,7 @@ do
           ;;
         p)
           makeparallel=${OPTARG} 
-          if [ $makeparallel == 0 -o $makeparallel == 1 ]; then
+          if [ $makeparallel = 0 -o $makeparallel = 1 ]; then
             echo "makeparallel: $makeparallel";
           else
             usage
@@ -201,7 +205,7 @@ do
 
         c)
           cleaneverything=${OPTARG} 
-          if [ $cleaneverything == 1 ]; then
+          if [ $cleaneverything = 1 ]; then
             echo "cleaneverything: $cleaneverything";
             cd $HDF5_ROOT/library/build/ccio
             make clean

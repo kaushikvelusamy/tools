@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
-# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
-# Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m mac -d debug -o 1 -r 2 -l no
+# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
 
 set -e
 set -x 
@@ -13,6 +13,7 @@ export HDF5_ROOT=$(pwd)"/.."
 echo $HDF5_ROOT
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
+#export LD_LIBRARY_PATH=/home/kvelusamy/Desktop/lin-ccio-v2/library/install/ccio/lib
 #use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
 mycompiler="mpicc"
 
@@ -26,7 +27,7 @@ stage_compile()
   testprog=$prog
   echo $objfile
   echo $exefile
-  echo $bindir
+  echo $bindir #for compiled h5pcc 
   echo $incldir
   $mycompiler -c -g -O3 -I$incldir $testprog -o $objfile
   $mycompiler $objfile -o $exefile -L$libdir -lhdf5 -lz 
@@ -38,7 +39,7 @@ stage_run()
 {
   mode=""
   # HDF5 Default Collective resetting everything to null
-  if [ "$run_mode" == "1" ]; then
+  if [ "$run_mode" = "1" ]; then
       echo "All HDF5 CCIO Env variables set to NULL"
       mode="Mode set to Default-Collective (No CCIO)"
       export HDF5_CCIO_FD_AGG=""
@@ -56,7 +57,7 @@ stage_run()
       export HDF5_CCIO_CB_STRIDE=""
       export HDF5_CCIO_TOPO_CB_SELECT=""
 
-  elif [ "$run_mode" == "2" ]; then
+  elif [ "$run_mode" = "2" ]; then
       mode="Mode set to CCIO=Default"
       export HDF5_CCIO_FD_AGG="yes" # [RECOMMENDED FOR GPFS]
       export HDF5_CCIO_TOPO_PPN="ranks" # ranks > 0 291*7
@@ -73,7 +74,7 @@ stage_run()
       export HDF5_CCIO_CB_STRIDE="0"
       export HDF5_CCIO_TOPO_CB_SELECT="no"
 
-  elif [ "$run_mode" == "3" ]; then
+  elif [ "$run_mode" = "3" ]; then
       mode="Mode set to CCIO=Topology Aware"
       export HDF5_CCIO_FD_AGG="yes" # [RECOMMENDED FOR GPFS]
       export HDF5_CCIO_TOPO_PPN="ranks" # ranks > 0 
@@ -93,7 +94,7 @@ stage_run()
 
   printenv | grep "HDF5*"
 
-  if [ "$debug" == "debug" ]; then
+  if [ "$debug" = "debug" ]; then
       export H5FD_mpio_Debug="yes"
       export HDF5_CCIO_DEBUG="yes"
       printenv | grep "H5FD_mpio_Debug"
@@ -101,13 +102,13 @@ stage_run()
   fi
 
 
-  if [ "$machine" == "mac" ]; then
+  if [ "$machine" = "mac" ]; then
       echo "Build Machine = $machine"
       echo $mode
       echo "Num Ranks = $ranks " 
-      mpirun -n $ranks $exefile
+      mpiexec -np $ranks ./$exefile
 
-  elif [ "$machine" == "theta" ]; then
+  elif [ "$machine" = "theta" ]; then
       # Set lustre stripe properties
       #subprocess.run(["lfs","setstripe","-c",str(lfs_count),"-S",str(lfs_size)+"m","."])
       export LDFLAGS="-llustreapi"
@@ -122,7 +123,7 @@ stage_run()
       echo "Num Ranks = $ranks " 
       echo "$ranks ranks" 
 
-      if [ "$mycompiler" == "mpicc" ]; then
+      if [ "$mycompiler" = "mpicc" ]; then
         #mpirun -np $ranks gdb ./$exefile 
         mpirun -np $ranks ./$exefile 
       else
@@ -166,7 +167,7 @@ do
           ;;
         m)
           machine=${OPTARG} 
-          if [ $machine == "mac" -o $machine == "theta" ]; then
+          if [ $machine = "mac" -o $machine = "theta" ]; then
             echo "Run Machine = $machine";
           else
             usage
@@ -175,7 +176,7 @@ do
           ;;
         d)
           debug=${OPTARG} 
-          if [ $debug == "prod" -o $debug == "debug" ]; then
+          if [ $debug = "prod" -o $debug = "debug" ]; then
             echo "Debug = $debug";
           else
             usage
@@ -184,10 +185,10 @@ do
           ;;
         l)
         selection_io=${OPTARG} 
-        if [ $selection_io == "yes" ]; then
+        if [ $selection_io = "yes" ]; then
           echo "selection_io = $selection_io";
           export HDF5_USE_SELECTION_IO="yes"
-        elif [ $selection_io == "no" ]; then
+        elif [ $selection_io = "no" ]; then
           echo "selection_io = $selection_io";
           export HDF5_USE_SELECTION_IO="no"
         else
@@ -205,7 +206,7 @@ do
           ;;          
         c)
           cleaneverything=${OPTARG} 
-          if [ $cleaneverything == 1 ]; then
+          if [ $cleaneverything = 1 ]; then
             echo "cleaneverything: $cleaneverything";
 #            rm -rf $(pwd)/gitrepos/
             exit 1
