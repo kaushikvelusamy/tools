@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
-# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
-# Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m mac -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
 
 set -e
 set -x 
@@ -14,7 +14,7 @@ echo $HDF5_ROOT
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
 #export LD_LIBRARY_PATH=/home/kvelusamy/Desktop/lin-ccio-v2/library/install/ccio/lib
-#use mpicc(nompirun-debug) or cc (prod-pmi.h) or h5pcc 
+#use mpicc(local) or cc (prod-pmi.h-nompirun) or h5pcc 
 mycompiler="mpicc"
 
 
@@ -102,7 +102,7 @@ stage_run()
   fi
 
 
-  if [ "$machine" = "mac" ]; then
+  if [ "$machine" = "local" ]; then
       echo "Build Machine = $machine"
       echo $mode
       echo "Num Ranks = $ranks " 
@@ -141,7 +141,7 @@ usage()
 { 
 echo "Usage: $0 [-s stages <compile|run|compile run..>] 
     \t\t  [-p <programName.c>] 
-    \t\t  [-m <mac|theta>]
+    \t\t  [-m <local|theta>]
     \t\t  [-d <debug>]
     \t\t  [-o <1|2|3|No CCIO, CCIO default, TA CCIO]
     \t\t  [-r <1|2|3|4 ranks]
@@ -167,7 +167,7 @@ do
           ;;
         m)
           machine=${OPTARG} 
-          if [ $machine = "mac" -o $machine = "theta" ]; then
+          if [ $machine = "local" -o $machine = "theta" ]; then
             echo "Run Machine = $machine";
           else
             usage
