@@ -1,0 +1,54 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build-Task with mpicc",
+            "command": "/usr/bin/mpicc",
+            "args": [
+                "-g",
+                "-O3",
+                "-I${fileDirname}/../library/install/ccio/include",
+                "-L${fileDirname}/../library/install/ccio/lib",
+                "${file}",
+                "-o",
+                "${fileDirname}/testprogram.exe",
+                "-lhdf5",
+                "-lz"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn":["cleanup-Run"]
+        },
+        {
+            "type": "shell",
+            "label": "Run-Task with mpicc",
+            "command": "/usr/bin/mpicc -g -O3 -I${fileDirname}/../library/install/ccio/include -L${fileDirname}/../library/install/ccio/lib testprogram5.c -o testprogram.exe -lhdf5 -lz &&/usr/bin/mpirun -np 8 ./testprogram.exe",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "cleanup-Run",
+            "command": "rm ./testprogram.exe*",
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ],
+    "version": "2.0.0"
+}

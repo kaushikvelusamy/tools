@@ -3,6 +3,10 @@
 # Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
 # Example : sh ./test-compile-run.sh -s "compile" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
 # Example : sh ./test-compile-run.sh -s "run" -p testprogram5.c -m local -d debug -o 1 -r 1 -l no
+# Example : sh ./test-compile-run.sh -s "compile run" -p testprogram5.c -m theta -d prod -o 1 -r 1 -l no
+# Notes for running on theta compute 
+# when running on theta compute node : run module load craype-mic-knl from mom node before compiling test app
+# when running on theta compute node : export CRAYPE_LINK_TYPE=static and manually set LD_LIBRARY_PATH on the terminal before running
 
 set -e
 set -x 
@@ -20,7 +24,7 @@ mycompiler="mpicc"
 
 stage_compile()
 {
-
+  rm ./testprogram.exe.*
   bindir=$HDF5_ROOT/library/install/ccio/bin
   incldir=$HDF5_ROOT/library/install/ccio/include
   libdir=$HDF5_ROOT/library/install/ccio/lib
@@ -31,6 +35,7 @@ stage_compile()
   echo $incldir
   $mycompiler -c -g -O3 -I$incldir $testprog -o $objfile
   $mycompiler $objfile -o $exefile -L$libdir -lhdf5 -lz 
+  # mpicc -g -O3 -I../library/install/ccio/include -L../library/install/ccio/lib testprogram5.c -o testprogram.exe -lhdf5 -lz  
   rm $objfile
   echo "Executable File Name is $exefile" 
 }
@@ -95,12 +100,11 @@ stage_run()
   printenv | grep "HDF5*"
 
   if [ "$debug" = "debug" ]; then
-      export H5FD_mpio_Debug="yes"
       export HDF5_CCIO_DEBUG="yes"
+      export H5FD_mpio_Debug='t'
       printenv | grep "H5FD_mpio_Debug"
       printenv | grep "HDF5_CCIO_DEBUG"
   fi
-
 
   if [ "$machine" = "local" ]; then
       echo "Build Machine = $machine"
@@ -124,18 +128,14 @@ stage_run()
       echo "$ranks ranks" 
 
       if [ "$mycompiler" = "mpicc" ]; then
-        #mpirun -np $ranks gdb ./$exefile 
-        mpirun -np $ranks ./$exefile 
+        mpirun -np $ranks gdb ./$exefile 
+        #mpirun -np $ranks xterm -e gdb ./$exefile 
       else
         #aprun -n $ranks -N 2 gdb ./$exefile 
         aprun -n $ranks -N 1 ./$exefile 
       fi
   fi
 }
-
-
-
-
 
 usage() 
 { 

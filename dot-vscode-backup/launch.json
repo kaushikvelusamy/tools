@@ -1,0 +1,61 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "singleprocess-gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/hdf5-cciov2-tools/testprogram.exe",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+            "environment": [
+                {"name": "LD_LIBRARY_PATH",         "value": "${cwd}/library/install/ccio/lib"},
+                {"name": "HDF5_USE_SELECTION_IO",   "value": "yes"},
+                {"name": "HDF5_CCIO_FD_AGG",        "value": "yes"},
+                {"name": "HDF5_CCIO_TOPO_PPN",      "value": "ranks"},
+                {"name": "HDF5_CCIO_CB_SIZE",       "value": "8388608"},
+                {"name": "HDF5_CCIO_FS_BLOCK_SIZE", "value": "8388608"},
+                {"name": "HDF5_CCIO_FS_BLOCK_COUNT","value": "8"},
+                {"name": "HDF5_CCIO_WR_METHOD",     "value": "2"},
+                {"name": "HDF5_CCIO_RD_METHOD",     "value": "2"},
+                {"name": "HDF5_CCIO_WR",            "value": "yes"},
+                {"name": "HDF5_CCIO_RD",            "value": "yes"},
+                {"name": "HDF5_CCIO_ASYNC",         "value": "no"},
+                {"name": "HDF5_CCIO_CB_NODES",      "value": "8.0"},
+                {"name": "HDF5_CCIO_CB_STRIDE",     "value": "0"},
+                {"name": "HDF5_CCIO_TOPO_CB_SELECT","value": "no"},
+                {"name": "H5FD_mpio_Debug",         "value": "t"},
+                {"name": "HDF5_CCIO_DEBUG",         "value": "yes"}
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build-Task with mpicc",
+            "miDebuggerPath": "/usr/local/bin/gdb"
+        },
+        {
+            "name": "multiprocess-gdb",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "${workspaceFolder}/hdf5-cciov2-tools/testprogram.exe",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build-Task with mpicc",
+            "miDebuggerPath": "/usr/local/bin/gdb"
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "files.associations": {
+        "h5fdprivate.h": "c",
+        "h5fdmpi.h": "c",
+        "h5sprivate.h": "c",
+        "h5private.h": "c",
+        "h5spkg.h": "c",
+        "h5fdmpio_topology.h": "c"
+    },
+    "terminal.integrated.env.linux": {
+        "LD_LIBRARY_PATH":"${cwd}/library/install/ccio/lib",
+        "HDF5_USE_SELECTION_IO":"yes",
+        "HDF5_CCIO_FD_AGG":"yes",
+        "HDF5_CCIO_TOPO_PPN":"ranks",
+        "HDF5_CCIO_CB_SIZE":"8388608",
+        "HDF5_CCIO_FS_BLOCK_SIZE":"8388608",
+        "HDF5_CCIO_FS_BLOCK_COUNT":"8",
+        "HDF5_CCIO_WR_METHOD":"2",
+        "HDF5_CCIO_RD_METHOD":"2",
+        "HDF5_CCIO_WR":"yes",
+        "HDF5_CCIO_RD":"yes",
+        "HDF5_CCIO_ASYNC":"no",
+        "HDF5_CCIO_CB_NODES":"8.0",
+        "HDF5_CCIO_CB_STRIDE":"0",
+        "HDF5_CCIO_TOPO_CB_SELECT":"no",
+        "H5FD_mpio_Debug":"t",
+        "HDF5_CCIO_DEBUG":"yes"
+    }
+}

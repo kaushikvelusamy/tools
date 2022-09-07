@@ -1,6 +1,7 @@
 # Bash script to clone,compile and run ccio feature of HDF5
 # Author: Kaushik 
 # Date: Apr 27, 2022
+# Example : sh ./run-ccio.sh -s "1 2" -b ccio -m local -d debug -p 0
 # Example : sh ./run-ccio.sh -s "1 2" -b ccio-v2 -m local -d debug -p 0
 # Example : sh ./run-ccio.sh -s "2" -m local -d debug -p 0 
 # Example : sh ./run-ccio.sh -s "2" -m theta -d debug -p 1 
@@ -10,6 +11,8 @@
 # Stage 2: Compile : args -m -d -p
 # Stage 3: setup test code : args -m"
 # If linux, in autogen.sh replace "HDF5_LIBTOOL=$(which libtool)" with "HDF5_LIBTOOL=$(which libtoolize)"
+# compiling just hdf5 (without test app) requires module craype-haswell and compiling (hdf5 with test app) if running on compute needs module craype-mic-knl.
+# If testing on theta login node, remove -DTHETA to avoid the PMI issue and unload nompirun ( or run it with -m local)
 
 #!/bin/sh
 set -e
@@ -19,6 +22,7 @@ export HDF5_ROOT=$(pwd)"/.."
 echo $HDF5_ROOT
 export CRAYPE_LINK_TYPE=dynamic
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_ROOT/library/install/ccio/lib
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lus/grand/projects/datascience/kaushikv/test-ccio-v2-dev/ccio-v2-dev/library/install/ccio/lib
 #use mpicc(nompirun-debug/local) or cc (prod-pmi.h) or h5pcc 
 mycompiler="mpicc"
 #extra arguments for hdf5 compile " --enable-shared --enable-threadsafe --enable-unsupported --enable-map-api"
@@ -34,16 +38,17 @@ stage1()
   cd $HDF5_ROOT/gitrepos/hdf5
   git checkout $branch
   echo "Setting up HDF5 code and branch - Done"
-
 }
 
 stage2()
 {
+  rm -r $HDF5_ROOT/library/build/ccio/*
+  rm -r $HDF5_ROOT/library/install/ccio/*
   echo "Starting scripts for HDF5 Compile, Make and install"
   if [ "$machine" = "theta" ]; then
       module unload darshan
       module load craype-haswell
-      module load craype-mic-knl
+      #module swap craype-mic-knl craype-haswell #comment if running on login uncomment if compute theta
       module swap craype-mic-knl craype-haswell
       #module unload craype-mic-knl
       #module load PrgEnv-gnu
@@ -57,12 +62,13 @@ stage2()
       if [ "$debug" = "prod" ]; then
           CC=$mycompiler CFLAGS='-O3 -DTHETA -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       elif [ "$debug" = "debug" ]; then
-          CC=$mycompiler CFLAGS='-O3 -DTHETA -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
+          CC=$mycompiler CFLAGS='-O3 -DTHETA -Donesidedtrace  -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio
       else
           echo "debug incorrect"
           exit 0
       fi
   elif [ "$machine" = "local" ]; then
+      #module unload nompirun
       cd $HDF5_ROOT/gitrepos/hdf5
       ./autogen.sh
       cd $HDF5_ROOT/library/build/ccio
@@ -70,7 +76,7 @@ stage2()
       if [ "$debug" = "prod" ]; then
           CC=$mycompiler CFLAGS='-O3 -Dtopo_timing' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=production --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
       elif [ "$debug" = "debug" ]; then
-          CC=$mycompiler CFLAGS='-O3 -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
+          CC=$mycompiler CFLAGS='-O3 -Donesidedtrace -DH5FDmpio_DEBUG' $HDF5_ROOT/gitrepos/hdf5/configure --enable-parallel --enable-build-mode=$debug --enable-symbols=yes --prefix=$HDF5_ROOT/library/install/ccio --enable-shared
       else
           echo "debug incorrect"
           exit 0
